@@ -11,3 +11,4 @@ THAT IS ALL - Ashley
 Ok - Kenton
 I'm on dev
 Ok i changed it
+This is how you learn heheheheehhe
