@@ -11,4 +11,6 @@ THAT IS ALL - Ashley
 Ok - Kenton
 I'm on dev
 Ok i changed it
+<<<<<<< HEAD
 Ashley Changed!
+>>>>>>> b44969ad75ef68b9a378c128b13c3d4dbdef9984
