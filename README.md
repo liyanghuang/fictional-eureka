@@ -8,3 +8,4 @@ k is up
 a to type behind line
 i to type ahead of line
 THAT IS ALL - Ashley
+Ok - Kenton
