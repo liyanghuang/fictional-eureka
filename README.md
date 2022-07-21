@@ -8,10 +8,8 @@ k is up
 a to type behind line
 i to type ahead of line
 THAT IS ALL - Ashley
-Ok i changed it
 Ashley Changed!
 This is how you learn heheheheehhe
-
 
 
 
