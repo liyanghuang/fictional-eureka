@@ -1,0 +1,5 @@
+name: fictional-eureka 
+main: com.fe.plugin.PluginMain
+version: 1.0
+api-version: 1.19
+commands:
