@@ -34,7 +34,6 @@ jobs:
         port: 21
         local-dir: ./target/
         server-dir: ./plugins/
-        dry-run: true
         exclude: |
           */**
         
