@@ -24,6 +24,7 @@ jobs:
     - name: Build with Maven
       run: |
         export PLUGIN_FOLDER=./target
+        mvn validate
         mvn -B package --file pom.xml
     - name: Deploy to Shockbyte
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
