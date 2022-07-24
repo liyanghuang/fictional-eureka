@@ -37,6 +37,17 @@ jobs:
         server-dir: ./plugins/
         exclude: |
           */**
+    - name: Restart Server
+      uses: actions/checkout@v3
+      with:
+        repository: Tiiffi/mcrcon
+    - run: |
+        cd mcrcon
+        make
+        ./mcrcon -H ${{ secrets.server_ip }} -P 7591 -p {{ secrets.server_password }} restart
+
+        
+        
         
         
     
