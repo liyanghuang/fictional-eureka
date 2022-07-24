@@ -45,7 +45,7 @@ jobs:
     - run: |
         cd mcrcon
         make
-        ./mcrcon -H ${{ secrets.server_ip }} -P 7591 -p {{ secrets.server_password }} restart
+        ./mcrcon -H ${{ secrets.server_ip }} -P 7591 -p ${{ secrets.server_password }} restart
 
         
         
