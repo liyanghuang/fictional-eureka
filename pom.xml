@@ -70,6 +70,22 @@
         <plugin>
           <artifactId>maven-install-plugin</artifactId>
           <version>3.0.0-M1</version>
+          <executions>
+            <execution>
+              <?m2e execute onConfiguration?>
+              <phase>validate</phase>
+              <goals>
+                  <goal>install-file</goal>
+              </goals>
+                <configuration>
+                  <groupId>org.spigotmc</groupId>
+                  <artifactId>spigot-api</artifactId>
+                  <version>1.19-R0.1-SNAPSHOT</version> 
+                  <packaging>jar</packaging>
+                  <file>${basedir}/lib/spigot-api-1.19-R0.1-SNAPSHOT-shaded.jar</file>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
