@@ -36,7 +36,7 @@ jobs:
         server-dir: ./plugins/
         dry-run: true
         exclude: |
-          /**
+          */**
         
         
     
