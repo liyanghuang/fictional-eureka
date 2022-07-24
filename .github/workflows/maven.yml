@@ -22,8 +22,8 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: export PLUGIN_FOLDER=./target
-           mvn -B package --file pom.xml
-           cd target
-           ls
+      run: mvn -B package --file pom.xml
+      run: cd target
+      run: ls
     - name: Deploy to Shockbyte
     
