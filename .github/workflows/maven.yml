@@ -26,7 +26,7 @@ jobs:
         export PLUGIN_FOLDER=./target
         mvn validate
         mvn -B package --file pom.xml
-    - name: Deploy to Shockbyte
+    - name: Deploy to Server
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
         server: 192.99.20.101
@@ -37,6 +37,22 @@ jobs:
         server-dir: ./plugins/
         exclude: |
           */**
+    - name: Checkout mcrcon
+      uses: actions/checkout@v3
+      with:
+        repository: Tiiffi/mcrcon
+        path: './mcrcon'
+    - name: Restart Server
+      run: |
+        cd mcrcon
+        make
+        ./mcrcon -H $SERVER_IP -P 7591 -p $SERVER_PASSWORD restart
+      env:
+        SERVER_IP: ${{ secrets.server_ip }}
+        SERVER_PASSWORD: ${{ secrets.server_password }}
+
+        
+        
         
         
     
