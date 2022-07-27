@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class CustomEnchantManager {
 
-    public static ItemStack addGlow(ItemStack itemStack) {
+    public ItemStack addGlow(ItemStack itemStack) {
 
         itemStack.addUnsafeEnchantment((itemStack.getType() == Material.BOW) ? Enchantment.PROTECTION_ENVIRONMENTAL : Enchantment.ARROW_INFINITE, 1);
         // hides the enchantments
@@ -22,7 +22,7 @@ public class CustomEnchantManager {
         return itemStack;
     }
 
-    public static ItemStack addEnchantText(ItemStack itemStack, String enchantText) {
+    public ItemStack addEnchantText(ItemStack itemStack, String enchantText) {
         
         final ItemMeta meta = itemStack.getItemMeta();
         List<String> previousLore = meta.getLore();
