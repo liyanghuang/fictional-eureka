@@ -25,7 +25,7 @@ jobs:
       run: |
         export PLUGIN_FOLDER=./target
         mvn validate
-        mvn -B package --file pom.xml
+        mvn clean compile assembly:single
     - name: Deploy to Server
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
