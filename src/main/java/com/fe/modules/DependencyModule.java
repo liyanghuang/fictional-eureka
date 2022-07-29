@@ -1,6 +1,5 @@
 package com.fe.modules;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -9,6 +8,7 @@ import org.bukkit.event.Listener;
 import com.fe.main.ListenerRegistrar;
 import com.fe.main.ListenerRegistrarImpl;
 import com.fe.modules.providers.ListenerProvider;
+import com.fe.plugin.PluginMain;
 import com.fe.util.RNG;
 import com.fe.util.RNGImpl;
 import com.fe.enchants.CustomEnchantManager;
@@ -21,6 +21,13 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
 
 public class DependencyModule extends AbstractModule{
+
+    private final PluginMain pluginMain;
+
+    public DependencyModule(final PluginMain pluginMain) {
+        super();
+        this.pluginMain = pluginMain;
+    }
     
     public void configure() {
         bind(Initializer.class).to(InitializerImpl.class).in(Singleton.class);;
@@ -41,5 +48,11 @@ public class DependencyModule extends AbstractModule{
     @Singleton
     public CustomEnchantManager provideCustomEnchantManager() {
         return new CustomEnchantManager();
+    }
+
+    @Provides
+    @Singleton
+    public PluginMain providePluginMain() {
+        return this.pluginMain;
     }
 }

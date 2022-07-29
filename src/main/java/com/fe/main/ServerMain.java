@@ -18,5 +18,9 @@ public class ServerMain {
         this.customEnchantManager = customEnchantManager;
         this.rng = rng;
     }
+
+    public CustomEnchantManager getCustomEnchantManager() {
+        return this.customEnchantManager;
+    }
     
 }
