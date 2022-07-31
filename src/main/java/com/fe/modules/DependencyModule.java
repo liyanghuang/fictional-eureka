@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.event.Listener;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import com.fe.main.ListenerRegistrar;
 import com.fe.main.ListenerRegistrarImpl;
@@ -54,5 +55,11 @@ public class DependencyModule extends AbstractModule{
     @Singleton
     public PluginMain providePluginMain() {
         return this.pluginMain;
+    }
+
+    @Provides
+    @Singleton
+    public FixedMetadataValue provideFixedMetadataValue() {
+        return new FixedMetadataValue(pluginMain, true);
     }
 }

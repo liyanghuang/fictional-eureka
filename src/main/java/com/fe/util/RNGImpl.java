@@ -6,10 +6,10 @@ import com.google.inject.Inject;
 
 public class RNGImpl implements RNG{
 
-    private Random random;
+    private final Random random;
 
     @Inject
-    public RNGImpl(Random random) {
+    public RNGImpl(final Random random) {
         this.random = random;
     }
 
@@ -20,19 +20,19 @@ public class RNGImpl implements RNG{
 
     // returns random int 0 - end
     @Override
-    public int randInt(int end) {
+    public int randInt(final int end) {
         return random.nextInt(end);
     }
 
     // returns random int start - end
     @Override
-    public int randInt(int start, int end) {
+    public int randInt(final int start, final int end) {
         return random.nextInt(start, end);
     }
 
     // returns true with percent chance
     @Override
-    public boolean testChance(float percent) {
+    public boolean testChance(final float percent) {
         return random.nextFloat() < percent;
     }
     

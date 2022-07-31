@@ -10,8 +10,8 @@ public class PluginMain extends JavaPlugin{
 
     @Override
     public void onEnable() {
-        Injector injector = Guice.createInjector(new DependencyModule(this));
-        Initializer initializer = injector.getInstance(Initializer.class);
+        final Injector injector = Guice.createInjector(new DependencyModule(this));
+        final Initializer initializer = injector.getInstance(Initializer.class);
         initializer.initialize();
     }
 

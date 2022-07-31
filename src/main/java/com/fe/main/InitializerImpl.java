@@ -5,11 +5,11 @@ import com.google.inject.Inject;
 
 public class InitializerImpl implements Initializer{
 
-    private PluginMain plugin;
-    private ListenerRegistrar listenerRegistrar;
+    private final PluginMain plugin;
+    private final ListenerRegistrar listenerRegistrar;
 
     @Inject
-    public InitializerImpl(PluginMain plugin, ListenerRegistrar listenerRegistrar){
+    public InitializerImpl(final PluginMain plugin, final ListenerRegistrar listenerRegistrar){
         this.plugin = plugin;
         this.listenerRegistrar = listenerRegistrar;
     }
