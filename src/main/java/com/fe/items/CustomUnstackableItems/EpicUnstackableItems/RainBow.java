@@ -50,6 +50,7 @@ public class RainBow extends EpicUnstackableItem implements Listener{
                         this.cancel();
                     else {
                         Entity dupArrow = arrow.getWorld().spawnEntity(arrow.getLocation(), EntityType.ARROW);
+                        dupArrow.setMetadata(CustomEnchantments.RAIN_BOW, fixedMetadataValue);
                         dupArrow.setVelocity(arrow.getVelocity().add(new Vector(random.nextFloat() - 0.5, random.nextFloat() - 0.5, random.nextFloat() - 0.5)));
                     }
                 }
