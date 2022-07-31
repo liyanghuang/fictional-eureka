@@ -4,4 +4,5 @@ package com.fe.enchants;
 public class CustomEnchantments {
     public static final String TRACKING_BOW = "Tracking X";
     public static final String RAIN_BOW = "Rain X";
+    public static final String AIR_STRIKE = "Air Strike";
 }

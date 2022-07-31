@@ -1,6 +1,7 @@
 package com.fe.items.CustomUnstackableItems.EpicUnstackableItems;
 
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -21,15 +22,17 @@ import com.google.inject.Inject;
 public class TrackingBow extends EpicUnstackableItem implements Listener{
 
     private final FixedMetadataValue fixedMetadataValue;
+    private final Random random;
 
     @Inject
-    public TrackingBow(FixedMetadataValue fixedMetadataValue) {
+    public TrackingBow(FixedMetadataValue fixedMetadataValue, Random random) {
         super(
             Material.BOW, 
             "Tracking Bow", 
             new String[] {CustomEnchantments.TRACKING_BOW}, 
             "Shoots exploding arrows that track down and destroy targets. It has a mind of it's own...");
         this.fixedMetadataValue = fixedMetadataValue;
+        this.random = random;
     }
 
     @EventHandler
@@ -47,19 +50,16 @@ public class TrackingBow extends EpicUnstackableItem implements Listener{
                     if(arrow.isDead())
                         this.cancel();
                     else {
-                        if(target == null){
+                        if(target == null || target.isDead()){
                             List<Entity> mobs = arrow.getNearbyEntities(30, 30, 30);
+                            // remove mobs that we shoudn't target
+                            mobs.removeIf(e -> (!(e instanceof LivingEntity) || e.equals(shooter) || !shooter.hasLineOfSight(e)));
                             if(mobs.size() > 0) {
-                                for(Entity e : mobs) {
-                                    if(e instanceof LivingEntity && !(e.equals(shooter)))
-                                    {
-                                        if(shooter.hasLineOfSight(e))
-                                            target = e;
-                                    }
-                                }
+                                // target a random mob from the mobs we can target
+                                target = mobs.get(random.nextInt(mobs.size()));
                             }
                         }
-                        if(target != null) {
+                        if(target != null && !target.isDead()) {
                             Vector targetDir = target.getLocation().toVector().add(new Vector(0, 0.7, 0)).subtract(arrow.getLocation().toVector()).normalize();
                             Vector directionChange = targetDir.subtract(arrow.getVelocity().normalize());
                             arrow.setVelocity(arrow.getVelocity().add(directionChange.multiply(0.5)));

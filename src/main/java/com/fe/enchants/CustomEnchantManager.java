@@ -70,6 +70,8 @@ public class CustomEnchantManager {
 
     public static boolean hasEnchantText(final ItemStack itemStack, final String enchantText) {
         final ItemMeta meta = itemStack.getItemMeta();
+        if(meta == null)
+            return false;
         List<String> previousLore = meta.getLore();
         if(previousLore == null)
             return false; // false if no lore

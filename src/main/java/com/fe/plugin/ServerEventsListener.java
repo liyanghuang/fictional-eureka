@@ -14,23 +14,27 @@ import org.bukkit.inventory.ItemStack;
 
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.RainBow;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.TrackingBow;
+import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.AirStrike;
 import com.google.inject.Inject;
 
 public class ServerEventsListener implements Listener{
 
     private final TrackingBow trackingBow;
     private final RainBow rainBow;
+    private final AirStrike airStrike;
 
     @Inject
-    public ServerEventsListener(final TrackingBow trackingBow, final RainBow rainBow) {
+    public ServerEventsListener(final TrackingBow trackingBow, final RainBow rainBow, final AirStrike airStrike) {
         this.trackingBow = trackingBow;
         this.rainBow = rainBow;
+        this.airStrike = airStrike;
     }
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         event.getPlayer().getInventory().addItem(this.trackingBow);
         event.getPlayer().getInventory().addItem(this.rainBow);
+        event.getPlayer().getInventory().addItem(this.airStrike);
         ItemStack helm = new ItemStack(Material.NETHERITE_HELMET);
         ItemStack chest = new ItemStack(Material.NETHERITE_CHESTPLATE);
         ItemStack legs = new ItemStack(Material.NETHERITE_LEGGINGS);
