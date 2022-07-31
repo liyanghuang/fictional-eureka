@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -74,7 +75,7 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
                 final Vector eyeDir = event.getPlayer().getEyeLocation().getDirection();
                 final World world = event.getPlayer().getWorld();
 
-                final RayTraceResult rt = world.rayTrace(eyeLoc, eyeDir, 100, FluidCollisionMode.NEVER, true, 1, isCurrentPlayer);
+                final RayTraceResult rt = world.rayTrace(eyeLoc, eyeDir, 200, FluidCollisionMode.NEVER, true, 1, isCurrentPlayer);
                 if(rt != null && rt.getHitBlock() != null && rt.getHitBlockFace() != null) {
 
                     new BukkitRunnable() {
@@ -161,11 +162,11 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
             return;
         event.setCancelled(true); // cancel event so there's no fire
         if(event.getHitBlock() != null) {
-            event.getHitBlock().getWorld().createExplosion(event.getHitBlock().getLocation(), 5, false, false, event.getEntity());
+            event.getHitBlock().getWorld().createExplosion(event.getHitBlock().getLocation(), 10, false, false, event.getEntity());
             event.getEntity().remove();
         }
         if(event.getHitEntity() != null) {
-            event.getHitEntity().getWorld().createExplosion(event.getHitEntity().getLocation(), 5, false, false, event.getEntity());
+            event.getHitEntity().getWorld().createExplosion(event.getHitEntity().getLocation(), 10, false, false, event.getEntity());
             event.getEntity().remove();
         }
     }
@@ -174,7 +175,7 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
 
         private final Location location;
         private final Player source;
-        private final int radius = 15;
+        private final int radius = 30;
 
         public DoStrike(final Location location, final Player source) {
             this.location = location;
