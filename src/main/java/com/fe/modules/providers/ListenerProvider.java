@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.event.Listener;
 
+import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.RainBow;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.TrackingBow;
 import com.fe.plugin.ServerEventsListener;
 import com.fe.util.Constants;
@@ -17,11 +18,13 @@ public class ListenerProvider implements Provider<List<Listener>>{
 
     private final TrackingBow trackingBow;
     private final ServerEventsListener serverEventsListener;
+    private final RainBow rainBow;
 
     @Inject
-    public ListenerProvider(final ServerEventsListener serverEventsListener, final TrackingBow trackingBow) {
+    public ListenerProvider(final ServerEventsListener serverEventsListener, final TrackingBow trackingBow, final RainBow rainBow) {
         this.serverEventsListener = serverEventsListener;
         this.trackingBow = trackingBow;
+        this.rainBow = rainBow;
     }
 
     @Override
@@ -30,6 +33,7 @@ public class ListenerProvider implements Provider<List<Listener>>{
         List<Listener> allListeners = new ArrayList<Listener>();
         allListeners.add(this.serverEventsListener);
         allListeners.add(this.trackingBow);
+        allListeners.add(this.rainBow);
         return allListeners;
     }
     
