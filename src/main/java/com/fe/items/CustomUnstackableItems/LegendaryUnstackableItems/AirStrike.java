@@ -17,7 +17,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -84,7 +83,7 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
                         Block beacon = rt.getHitBlock().getRelative(rt.getHitBlockFace());
                         final long startTime = System.currentTimeMillis();
                         boolean firstRun = true;
-                        final Material prevMat = beacon.getType();
+                        final Material prevMat = (beacon.getType() == Material.END_GATEWAY? Material.AIR : beacon.getType());
                         BukkitTask strikeTask = null;
 
                         @Override
@@ -115,7 +114,7 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
 
                         final Entity target = rt.getHitEntity();
                         Block beacon = world.getBlockAt(rt.getHitEntity().getLocation().add(2,0,0));
-                        Material prevMat = beacon.getType();
+                        Material prevMat = (beacon.getType() == Material.END_GATEWAY? Material.AIR : beacon.getType());
                         final long startTime = System.currentTimeMillis();
                         BukkitTask strikeTask = null;
 
@@ -127,7 +126,7 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
                             {
                                 beacon.setType(prevMat);
                                 beacon = world.getBlockAt(target.getLocation());
-                                prevMat = beacon.getType();
+                                prevMat = (beacon.getType() == Material.END_GATEWAY? Material.AIR : beacon.getType());
                                 if(strikeTask == null)
                                     beacon.setType(Material.END_GATEWAY);
                             }
