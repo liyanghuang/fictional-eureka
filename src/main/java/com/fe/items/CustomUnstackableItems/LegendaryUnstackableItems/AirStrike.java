@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -156,17 +157,24 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
         }
     }
 
+    // make it so fireballs don't get blown away from where they are supposed to land
+    @EventHandler
+    public void handleFireballHitByExplosion(EntityDamageByEntityEvent event) {
+        if(event.getEntity().hasMetadata(CustomEnchantments.AIR_STRIKE) && event.getDamager().hasMetadata(CustomEnchantments.AIR_STRIKE))
+            event.setCancelled(true);
+    }
+
     @EventHandler
     public void handleFireballLand(ProjectileHitEvent event) {
         if(!event.getEntity().hasMetadata(CustomEnchantments.AIR_STRIKE))
             return;
         event.setCancelled(true); // cancel event so there's no fire
         if(event.getHitBlock() != null) {
-            event.getHitBlock().getWorld().createExplosion(event.getHitBlock().getLocation(), 10, false, false, event.getEntity());
+            event.getHitBlock().getWorld().createExplosion(event.getHitBlock().getLocation(), 8, false, false, event.getEntity());
             event.getEntity().remove();
         }
         if(event.getHitEntity() != null) {
-            event.getHitEntity().getWorld().createExplosion(event.getHitEntity().getLocation(), 10, false, false, event.getEntity());
+            event.getHitEntity().getWorld().createExplosion(event.getHitEntity().getLocation(), 8, false, false, event.getEntity());
             event.getEntity().remove();
         }
     }
@@ -175,7 +183,7 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
 
         private final Location location;
         private final Player source;
-        private final int radius = 30;
+        private final int radius = 23;
 
         public DoStrike(final Location location, final Player source) {
             this.location = location;
@@ -185,13 +193,15 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
 
         @Override
         public void run() {
-            final Location thisStrikeLoc = location.clone();
-            Fireball fireball = (Fireball) location.getWorld().spawnEntity(thisStrikeLoc.add(random.nextInt(radius * 2) - radius, location.getY() + 200, random.nextInt(radius * 2) - radius), EntityType.FIREBALL);
-            fireball.setShooter(source);
-            fireball.setMetadata(CustomEnchantments.AIR_STRIKE, fixedMetadataValue);
-            fireball.setIsIncendiary(false);
-            fireball.setYield(0);
-            fireball.setVelocity(new Vector(0, -10, 0));
+            for(int i = 0; i < 2; i++) {
+                final Location thisStrikeLoc = location.clone();
+                Fireball fireball = (Fireball) location.getWorld().spawnEntity(thisStrikeLoc.add(random.nextInt(radius * 2) - radius, location.getY() + 200, random.nextInt(radius * 2) - radius), EntityType.FIREBALL);
+                fireball.setShooter(source);
+                fireball.setMetadata(CustomEnchantments.AIR_STRIKE, fixedMetadataValue);
+                fireball.setIsIncendiary(false);
+                fireball.setYield(0);
+                fireball.setVelocity(new Vector(0, -10, 0));
+            }
         }
     }
 }
