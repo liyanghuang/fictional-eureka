@@ -20,7 +20,7 @@ public class DeathNote extends MythicUnstackableItem implements Listener{
         super(Material.WRITABLE_BOOK, 
         CustomEnchantManager.formatString("#4e0577D#470477e#3f0477a#380377t#310377h #290277N#220177o#1a0177t#130077e", true, false, false),
         new String[] {ChatColor.RED + CustomEnchantments.DEATH_NOTE, ChatColor.RED + "Curse of Vanishing"},
-        "An ominous notebook. Using it seems to lead to painful consequences.");
+        "Using it seems to lead to painful consequences.");
 
         this.addUnsafeEnchantment(Enchantment.VANISHING_CURSE, 1);
     }

@@ -11,9 +11,9 @@ public class Wabbajack extends MythicUnstackableItem implements Listener{
     public Wabbajack() {
         super(
             Material.BLAZE_ROD,
-            CustomEnchantManager.formatString("#ff95ffL#ff8ef2O#ff86e6L", true, false, true) + "" + 
-            CustomEnchantManager.formatString("#fb56c0T#fb50b2H#fb4aa5E #fb4497W#fc3d89A#fc377bB#fc316eB#fc2b60A#fc2552J#fc1f45A#fc1937C#fd1229K#fd0c1b!#fd060e!#fd0000!", true, false, false) + "" +
-            CustomEnchantManager.formatString("#fd0f1aL#fd070dO#fd0000L", true, false, true),
+            CustomEnchantManager.formatString("#ff00b3L#ff00a6O#ff0099L", true, false, true) + "" + 
+            CustomEnchantManager.formatString("#ff008dW#ff0080A#ff0073B#ff0066B#ff005aA#ff004dJ#ff0040A#ff0033C#ff0026K", true, false, false) + "" +
+            CustomEnchantManager.formatString("#ff001aL#ff000dO#ff0000L", true, false, true),
             new String[] {CustomEnchantments.WABBAJACK},
             "What does it do..."
         );
