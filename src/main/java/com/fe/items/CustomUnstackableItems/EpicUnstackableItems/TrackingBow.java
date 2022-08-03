@@ -1,44 +1,40 @@
 package com.fe.items.CustomUnstackableItems.EpicUnstackableItems;
 
 import java.util.List;
-import java.util.Random;
 
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.fe.enchants.CustomEnchantManager;
 import com.fe.enchants.CustomEnchantments;
 import com.fe.plugin.PluginMain;
+import com.fe.util.Constants;
 import com.google.inject.Inject;
 
 public class TrackingBow extends EpicUnstackableItem implements Listener{
 
-    private final FixedMetadataValue fixedMetadataValue;
-    private final Random random;
-
     @Inject
-    public TrackingBow(FixedMetadataValue fixedMetadataValue, Random random) {
+    public TrackingBow() {
         super(
             Material.BOW, 
-            "Tracking Bow", 
-            new String[] {CustomEnchantments.TRACKING_BOW}, 
-            "Shoots exploding arrows that track down and destroy targets. It has a mind of it's own...");
-        this.fixedMetadataValue = fixedMetadataValue;
-        this.random = random;
+            "Whistler", 
+            new String[] {CustomEnchantments.TRACKING_BOW, "Explosiveness V", "Infinity"}, 
+            "The arrows seem to have a mind of their own...");
+        this.addEnchantment(Enchantment.ARROW_INFINITE, 1);
     }
 
     @EventHandler
     public void handleBowShoot(EntityShootBowEvent event) {
         if(CustomEnchantManager.hasEnchantText(event.getBow(), CustomEnchantments.TRACKING_BOW)) {
-            event.getProjectile().setMetadata(CustomEnchantments.TRACKING_BOW, fixedMetadataValue);
+            event.getProjectile().setMetadata(CustomEnchantments.TRACKING_BOW, Constants.ServerConstants.FIXED_METADATA_TRUE);
             new BukkitRunnable() {
 
                 Entity arrow = event.getProjectile();
@@ -56,7 +52,7 @@ public class TrackingBow extends EpicUnstackableItem implements Listener{
                             mobs.removeIf(e -> (!(e instanceof LivingEntity) || e.equals(shooter) || !shooter.hasLineOfSight(e)));
                             if(mobs.size() > 0) {
                                 // target a random mob from the mobs we can target
-                                target = mobs.get(random.nextInt(mobs.size()));
+                                target = mobs.get(Constants.ServerConstants.RANDOM.nextInt(mobs.size()));
                             }
                         }
                         if(target != null && !target.isDead()) {

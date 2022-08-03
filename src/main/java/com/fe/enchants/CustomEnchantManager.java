@@ -2,6 +2,8 @@ package com.fe.enchants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,6 +17,7 @@ import com.fe.exceptions.BadEnchantException;
 public class CustomEnchantManager {
 
     private static final int DEFAULT_WRAPPING_LENGTH = 30;
+    private static final Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
     public static ItemStack addGlow(final ItemStack itemStack) {
 
@@ -49,9 +52,8 @@ public class CustomEnchantManager {
         if(previousLore == null)
             previousLore = new ArrayList<>();
         final String[] wrappedText = wrapString(loreText, DEFAULT_WRAPPING_LENGTH).split("\\r?\\n");
-        previousLore.add(""); // add empty line to separate from enchantments
         for (final String wrappedLine : wrappedText)
-            previousLore.add(ChatColor.getLastColors(wrappedText[0]) + wrappedLine);
+            previousLore.add(ChatColor.getLastColors(loreText) + wrappedLine);
         meta.setLore(previousLore);
         itemStack.setItemMeta(meta);
         return itemStack;
@@ -69,6 +71,8 @@ public class CustomEnchantManager {
     }
 
     public static boolean hasEnchantText(final ItemStack itemStack, final String enchantText) {
+        if(itemStack == null)
+            return false;
         final ItemMeta meta = itemStack.getItemMeta();
         if(meta == null)
             return false;
@@ -97,5 +101,18 @@ public class CustomEnchantManager {
         if(spaceIndex != -1 && spaceIndex < wrappingLength)
             return s.substring(0, spaceIndex) + "\n" + wrapString(s.substring(spaceIndex + 1), wrappingLength);
         return s.substring(0, wrappingLength) + "\n" + wrapString(s.substring(wrappingLength), wrappingLength);
+    }
+
+    public static String formatString(String s, boolean bold, boolean italic, boolean magic) {
+        Matcher matcher = pattern.matcher(s);
+        while(matcher.find()) {
+            String color = s.substring(matcher.start(), matcher.end());
+            s = s.replace(color, net.md_5.bungee.api.ChatColor.of(color) + "" + 
+                ((magic)? ChatColor.MAGIC : "") + "" + 
+                ((bold)? ChatColor.BOLD : "") + "" + 
+                ((italic)? ChatColor.ITALIC : "") + "");
+            matcher = pattern.matcher(s);
+        }
+        return net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', s);
     }
 }

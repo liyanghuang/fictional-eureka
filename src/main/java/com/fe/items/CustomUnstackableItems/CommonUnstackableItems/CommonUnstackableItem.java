@@ -11,5 +11,6 @@ public class CommonUnstackableItem extends CustomUnstackableItem{
         super(material, hasGlow);
         this.addName(ChatColor.DARK_GREEN + name);
         this.addLore(ChatColor.DARK_AQUA + lore);
+        this.addLore(ChatColor.DARK_GREEN + "Common");
     }
 }

@@ -1,6 +1,5 @@
 package com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems;
 
-import java.util.Random;
 import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
@@ -20,9 +19,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.RayTraceResult;
@@ -30,46 +26,40 @@ import org.bukkit.util.Vector;
 
 import com.fe.enchants.CustomEnchantManager;
 import com.fe.enchants.CustomEnchantments;
+import com.fe.items.CustomUnstackableItems.CustomUnstackableItem;
 import com.fe.plugin.PluginMain;
 import com.fe.util.Constants;
 import com.google.inject.Inject;
 
 public class AirStrike extends LegendaryUnstackableItem implements Listener{
 
-    private final FixedMetadataValue fixedMetadataValue;
-    private final Random random;
-
     @Inject
-    public AirStrike(final FixedMetadataValue fixedMetadataValue, final Random random) {
+    public AirStrike() {
         super(
             Material.BEACON,
-            "Air Strike Remote",
-            new String[] {CustomEnchantments.AIR_STRIKE},
-            "Launches an airstrike anywhere you can see");
-        this.fixedMetadataValue = fixedMetadataValue;
-        this.random = random;
+            "Buster Call",
+            new String[] {CustomEnchantments.AIR_STRIKE, "Explosiveness VIII"},
+            "Why is the sky suddenly so dark...");
     }
 
     @EventHandler
     public void handPlayerInteract(final PlayerInteractEvent event) {
+
+        // capture the left click event
         if((event.getAction() == Action.LEFT_CLICK_AIR || 
             event.getAction() == Action.LEFT_CLICK_BLOCK) && 
             CustomEnchantManager.hasEnchantText(event.getPlayer().getInventory().getItemInMainHand(), CustomEnchantments.AIR_STRIKE))
         {
+            // cancel the event (so left click doesn't actually happen)
             event.setCancelled(true);
-            final ItemStack airStrike = event.getPlayer().getInventory().getItemInMainHand();
-            final ItemMeta meta = airStrike.getItemMeta();
-            long timer = 0;
-            if(meta.getPersistentDataContainer().has(Constants.ServerConstants.AIR_STRIKE_IDENTIFIER, PersistentDataType.LONG)) {
-                timer = meta.getPersistentDataContainer().get(Constants.ServerConstants.AIR_STRIKE_IDENTIFIER, PersistentDataType.LONG);
-            }
-            if(System.currentTimeMillis() - timer > 20000) {
-                final Predicate<Entity> isCurrentPlayer = i -> (!i.getName().equals(event.getPlayer().getName()));
+            final ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
 
-                meta.getPersistentDataContainer().set(Constants.ServerConstants.AIR_STRIKE_IDENTIFIER, PersistentDataType.LONG, System.currentTimeMillis());           
-                airStrike.setItemMeta(meta);
-
+            // use CustomUnstackableItem cooldown system to declare a 20 second cooldown, have to use static methods b/c spigot doesn't cast well
+            if(CustomUnstackableItem.isAvailable(Constants.ServerConstants.AIR_STRIKE_IDENTIFIER, item, 20000)) {
+                CustomUnstackableItem.setCooldown(Constants.ServerConstants.AIR_STRIKE_IDENTIFIER, item);
                 event.getPlayer().setCooldown(Material.BEACON, 400);
+
+                final Predicate<Entity> isCurrentPlayer = i -> (!i.getName().equals(event.getPlayer().getName()));
 
                 final Location eyeLoc = event.getPlayer().getEyeLocation();
                 final Vector eyeDir = event.getPlayer().getEyeLocation().getDirection();
@@ -158,13 +148,13 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
 
     // make it so fireballs don't get blown away from where they are supposed to land
     @EventHandler
-    public void handleFireballHitByExplosion(EntityDamageByEntityEvent event) {
+    public void handleFireballHitByExplosion(final EntityDamageByEntityEvent event) {
         if(event.getEntity().hasMetadata(CustomEnchantments.AIR_STRIKE) && event.getDamager().hasMetadata(CustomEnchantments.AIR_STRIKE))
             event.setCancelled(true);
     }
 
     @EventHandler
-    public void handleFireballLand(ProjectileHitEvent event) {
+    public void handleFireballLand(final ProjectileHitEvent event) {
         if(!event.getEntity().hasMetadata(CustomEnchantments.AIR_STRIKE))
             return;
         event.setCancelled(true); // cancel event so there's no fire
@@ -194,9 +184,13 @@ public class AirStrike extends LegendaryUnstackableItem implements Listener{
         public void run() {
             for(int i = 0; i < 2; i++) {
                 final Location thisStrikeLoc = location.clone();
-                Fireball fireball = (Fireball) location.getWorld().spawnEntity(thisStrikeLoc.add(random.nextInt(radius * 2) - radius, location.getY() + 200, random.nextInt(radius * 2) - radius), EntityType.FIREBALL);
+                Fireball fireball = (Fireball) location.getWorld().spawnEntity(
+                    thisStrikeLoc.add(
+                        Constants.ServerConstants.RANDOM.nextInt(radius * 2) - radius, 
+                        location.getY() + 200, 
+                        Constants.ServerConstants.RANDOM.nextInt(radius * 2) - radius), EntityType.FIREBALL);
                 fireball.setShooter(source);
-                fireball.setMetadata(CustomEnchantments.AIR_STRIKE, fixedMetadataValue);
+                fireball.setMetadata(CustomEnchantments.AIR_STRIKE, Constants.ServerConstants.FIXED_METADATA_TRUE);
                 fireball.setIsIncendiary(false);
                 fireball.setYield(0);
                 fireball.setVelocity(new Vector(0, -10, 0));
