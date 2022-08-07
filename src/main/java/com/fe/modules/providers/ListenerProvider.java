@@ -11,6 +11,7 @@ import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.RainBow;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.SpikeWave;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.TrackingBow;
 import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.AirStrike;
+import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.GrapplingHook;
 import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.StaffOfIce;
 import com.fe.items.CustomUnstackableItems.MythicUnstackableItems.DeathNote;
 import com.fe.items.CustomUnstackableItems.MythicUnstackableItems.Wabbajack;
@@ -37,6 +38,7 @@ public class ListenerProvider implements Provider<List<Listener>>{
         allListeners.add(new DeathNote());
         allListeners.add(new SpikeWave());
         allListeners.add(new KamiKaze());
+        allListeners.add(new GrapplingHook());
         return allListeners;
     }
     

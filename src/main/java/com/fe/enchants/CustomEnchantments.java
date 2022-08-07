@@ -12,5 +12,6 @@ public class CustomEnchantments {
     public static final String DEATH_NOTE = "Curse of Death";
     public static final String SPIKE_WAVE = "Spike Attack";
     public static final String KAMI_KAZE = "Neeoom X";
+    public static final String GRAPPLING_HOOK = "Grappling";
 }
 
