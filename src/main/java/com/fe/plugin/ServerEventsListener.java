@@ -8,7 +8,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.AirJordans;
+import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.KamiKaze;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.RainBow;
+import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.SpikeWave;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.TrackingBow;
 import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.AirStrike;
 import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.StaffOfIce;
@@ -28,6 +30,11 @@ public class ServerEventsListener implements Listener{
         event.getPlayer().getInventory().addItem(new Wabbajack());
         event.getPlayer().getInventory().addItem(new StaffOfIce());
         event.getPlayer().getInventory().addItem(new DeathNote());
+        event.getPlayer().getInventory().addItem(new SpikeWave());
+        event.getPlayer().getInventory().addItem(new KamiKaze());
+
+
+        
         ItemStack helm = new ItemStack(Material.NETHERITE_HELMET);
         ItemStack chest = new ItemStack(Material.NETHERITE_CHESTPLATE);
         ItemStack legs = new ItemStack(Material.NETHERITE_LEGGINGS);
