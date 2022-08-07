@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
