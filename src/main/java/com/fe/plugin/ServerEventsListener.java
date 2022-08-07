@@ -2,6 +2,7 @@ package com.fe.plugin;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -11,6 +12,7 @@ import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.AirJordans;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.RainBow;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.TrackingBow;
 import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.AirStrike;
+import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.GrapplingHook;
 import com.fe.items.CustomUnstackableItems.LegendaryUnstackableItems.StaffOfIce;
 import com.fe.items.CustomUnstackableItems.MythicUnstackableItems.DeathNote;
 import com.fe.items.CustomUnstackableItems.MythicUnstackableItems.Wabbajack;
@@ -19,6 +21,7 @@ public class ServerEventsListener implements Listener{
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
+
         event.getPlayer().setOp(true);
         event.getPlayer().setFlySpeed(0.1f);
         event.getPlayer().getInventory().addItem(new TrackingBow());
@@ -28,6 +31,7 @@ public class ServerEventsListener implements Listener{
         event.getPlayer().getInventory().addItem(new Wabbajack());
         event.getPlayer().getInventory().addItem(new StaffOfIce());
         event.getPlayer().getInventory().addItem(new DeathNote());
+        event.getPlayer().getInventory().addItem(new GrapplingHook());
         ItemStack helm = new ItemStack(Material.NETHERITE_HELMET);
         ItemStack chest = new ItemStack(Material.NETHERITE_CHESTPLATE);
         ItemStack legs = new ItemStack(Material.NETHERITE_LEGGINGS);

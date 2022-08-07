@@ -10,4 +10,5 @@ public class CustomEnchantments {
     public static final String WABBAJACK = "Randomness XXX";
     public static final String STAFF_OF_ICE = "Freeze";
     public static final String DEATH_NOTE = "Curse of Death";
+    public static final String GRAPPLING_HOOK = "Grappling";
 }
