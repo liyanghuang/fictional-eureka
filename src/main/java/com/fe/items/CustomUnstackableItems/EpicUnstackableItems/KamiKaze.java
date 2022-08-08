@@ -71,6 +71,7 @@ public class KamiKaze extends EpicUnstackableItem implements Listener{
 
                 if(CustomUnstackableItem.isAvailable(Constants.ServerConstants.KAMI_KAZE_IDENTIFIER, item, 1000)) {
                     CustomUnstackableItem.setCooldown(Constants.ServerConstants.KAMI_KAZE_IDENTIFIER, item);
+                    p.setHealth(0);
                     p.getWorld().createExplosion(p.getLocation(), 10, true, false);
                 }    
             }
