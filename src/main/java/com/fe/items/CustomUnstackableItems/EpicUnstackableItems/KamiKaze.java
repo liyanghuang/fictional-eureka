@@ -57,21 +57,51 @@ public class KamiKaze extends EpicUnstackableItem implements Listener{
         // check if entity hurt is a player
         if(e instanceof Player) {
             Player p = (Player) e;
-
-            System.out.println(p.getVelocity().length());
+            final ItemStack kamikaze = p.getInventory().getChestplate();
+            final ItemMeta meta = kamikaze.getItemMeta();
+            boolean isGliding = false;
             // check if player is wearing elytra and got hurt from flying into a wall
-
+            if(meta.getPersistentDataContainer().has(Constants.ServerConstants.IS_GLIDING_IDENTIFIER, PersistentDataType.INTEGER))
+                isGliding = meta.getPersistentDataContainer().get(Constants.ServerConstants.IS_GLIDING_IDENTIFIER, PersistentDataType.INTEGER) == Constants.ServerConstants.PERSISTENT_DATA_TYPE_TRUE;
             if (CustomEnchantManager.hasEnchantText(p.getInventory().getChestplate(), CustomEnchantments.KAMI_KAZE) && 
-                (event.getCause() == DamageCause.FLY_INTO_WALL || (event.getCause() == DamageCause.FALL && p.getVelocity().length() > 0.3  ) ) ) {
+                ((event.getCause() == DamageCause.FLY_INTO_WALL && isGliding)|| 
+                (event.getCause() == DamageCause.FALL && isGliding))) {
                 // use CustomUnstackableItem cooldown system to declare a 20 second cooldown, have to use static methods b/c spigot doesn't cast well
                 final ItemStack item = p.getInventory().getChestplate();
 
-                if(CustomUnstackableItem.isAvailable(Constants.ServerConstants.KAMI_KAZE_IDENTIFIER, item, 20000)) {
+                if(CustomUnstackableItem.isAvailable(Constants.ServerConstants.KAMI_KAZE_IDENTIFIER, item, 1000)) {
                     CustomUnstackableItem.setCooldown(Constants.ServerConstants.KAMI_KAZE_IDENTIFIER, item);
-                    p.setCooldown(Material.ELYTRA, 400);
-
-                    p.getWorld().createExplosion(p.getLocation(), 10);
+                    p.getWorld().createExplosion(p.getLocation(), 10, true, false);
                 }    
+            }
+        }
+    }
+
+    @EventHandler
+    public void onToggleGlide(final EntityToggleGlideEvent event) {
+        Entity e = event.getEntity();
+        if(e instanceof Player) {
+            Player p = (Player) e;
+            if (CustomEnchantManager.hasEnchantText(p.getInventory().getChestplate(), CustomEnchantments.KAMI_KAZE)) {
+                if(!p.isGliding()) {
+                    final ItemStack kamikaze = p.getInventory().getChestplate();
+                    final ItemMeta meta = kamikaze.getItemMeta();
+                    meta.getPersistentDataContainer().set(Constants.ServerConstants.IS_GLIDING_IDENTIFIER, PersistentDataType.INTEGER, Constants.ServerConstants.PERSISTENT_DATA_TYPE_TRUE);
+                    kamikaze.setItemMeta(meta);
+                }
+                if(p.isGliding()) {
+                    final ItemStack kamikaze = p.getInventory().getChestplate();
+                    final ItemMeta meta = kamikaze.getItemMeta();
+                    new BukkitRunnable() {
+
+                        @Override
+                        public void run() {
+                            meta.getPersistentDataContainer().set(Constants.ServerConstants.IS_GLIDING_IDENTIFIER, PersistentDataType.INTEGER, Constants.ServerConstants.PERSISTENT_DATA_TYPE_FALSE);
+                            kamikaze.setItemMeta(meta);
+                        }
+                        
+                    }.runTaskLater(PluginMain.getPlugin(PluginMain.class), 1);
+                }
             }
         }
     }

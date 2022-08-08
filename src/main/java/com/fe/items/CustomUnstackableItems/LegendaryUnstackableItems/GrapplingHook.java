@@ -23,7 +23,9 @@ import org.bukkit.util.Vector;
 
 import com.fe.enchants.CustomEnchantManager;
 import com.fe.enchants.CustomEnchantments;
+import com.fe.items.CustomUnstackableItems.CustomUnstackableItem;
 import com.fe.plugin.PluginMain;
+import com.fe.util.Constants;
 
 public class GrapplingHook extends LegendaryUnstackableItem implements Listener{
  
@@ -32,100 +34,107 @@ public class GrapplingHook extends LegendaryUnstackableItem implements Listener{
             Material.CHAIN,
             "Grappling Hook",
             new String [] {CustomEnchantments.GRAPPLING_HOOK},
-            "ice in the veins yuh"
+            "Become a shittier spiderman"
         );
     }
 
-    	
+    	// todo: figure out offhand better
 
 	@EventHandler
 	public void playerInteract(final PlayerInteractEvent event)
 	{
-		if((event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) 
-            && CustomEnchantManager.hasEnchantText(event.getPlayer().getInventory().getItemInMainHand(), CustomEnchantments.GRAPPLING_HOOK))
-		{
+        if(CustomEnchantManager.hasEnchantText(event.getPlayer().getInventory().getItemInMainHand(), CustomEnchantments.GRAPPLING_HOOK))
+            event.setCancelled(true);
 
+		if(((event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) && 
+            CustomEnchantManager.hasEnchantText(event.getPlayer().getInventory().getItemInMainHand(), CustomEnchantments.GRAPPLING_HOOK)) ||
+            ((event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) && 
+            CustomEnchantManager.hasEnchantText(event.getPlayer().getInventory().getItemInOffHand(), CustomEnchantments.GRAPPLING_HOOK) &&
+            !event.getPlayer().getInventory().getItemInMainHand().getType().isInteractable()))
+		{
+            event.setCancelled(true);
 
             final Player player = event.getPlayer();
-            final ItemStack item = player.getInventory().getItemInMainHand();
-            final Vector lookingDir = player.getEyeLocation().getDirection().multiply(0.5);
-            final Predicate<Entity> isCurrentPlayer = i -> (!i.getName().equals(event.getPlayer().getName()) && i.getType() != EntityType.ARMOR_STAND);
+            final ItemStack item;
+            if(CustomEnchantManager.hasEnchantText(event.getPlayer().getInventory().getItemInMainHand(), CustomEnchantments.GRAPPLING_HOOK))
+                item = player.getInventory().getItemInMainHand();
+            else
+                item = player.getInventory().getItemInOffHand();
 
-            new BukkitRunnable() {
+            if(CustomUnstackableItem.isAvailable(Constants.ServerConstants.GRAPPLING_HOOK_IDENTIFIER, item, 2000)) {
+                CustomUnstackableItem.setCooldown(Constants.ServerConstants.GRAPPLING_HOOK_IDENTIFIER, item);
+                event.getPlayer().setCooldown(Material.CHAIN, 40);
 
-                private int pieces = 0;
-                private boolean maxLengthReached = false;
-                private boolean hitBlock = false;
-                private Block block = null;
-                private Stack<ArmorStand> grapplingPieces = new Stack<ArmorStand>();
-                private Location startLoc = player.getLocation().add(0, 1, 0);
-                private Vector startVec = player.getLocation().toVector();
+                final Vector lookingDir = player.getEyeLocation().getDirection().multiply(0.5);
+                final Predicate<Entity> isCurrentPlayer = i -> (!i.getName().equals(event.getPlayer().getName()) && i.getType() != EntityType.ARMOR_STAND);
 
-                @Override
-                public void run() {
+                new BukkitRunnable() {
 
-                    // update armor stand positions
-                    for(ArmorStand as : grapplingPieces) {
-                        as.teleport(as.getLocation().add(player.getLocation().toVector().subtract(startVec)));
-                    }
-                    startVec = player.getLocation().toVector();
+                    private boolean maxLengthReached = false;
+                    private boolean hitBlock = false;
+                    private Block block = null;
+                    private Stack<ArmorStand> grapplingPieces = new Stack<ArmorStand>();
+                    private Location startLoc = player.getLocation().add(0, 1, 0);
+                    private Vector startVec = player.getLocation().toVector();
 
-                    // shoot the grapple
-                    if(!maxLengthReached) {
+                    @Override
+                    public void run() {
 
-                        maxLengthReached = true;
-
-                        for(int i = 0; i < 40; i++) {
-                            startLoc.add(lookingDir);
-                            if(player.getWorld().getBlockAt(startLoc).getType() != Material.AIR) {
-                                hitBlock = true;
-                                block = player.getWorld().getBlockAt(startLoc);
-                                break;
-                            }
-                            if(!player.getWorld().getNearbyEntities(startLoc, 1, 1, 1, isCurrentPlayer).isEmpty()) {
-                                Entity hitEntity = player.getWorld().getNearbyEntities(startLoc, 1, 1, 1, isCurrentPlayer).stream().findFirst().get();
-                                hitEntity.setVelocity(player.getLocation().toVector().subtract(hitEntity.getLocation().toVector()).normalize().multiply(4));
-                                break;
-                            }
-                            // rendering the grappling pieces
-                            grapplingPieces.push(getGrapplingPiece(startLoc.subtract(0, 2, 0)));
-                            startLoc.add(0, 2, 0);
+                        // update armor stand positions
+                        for(ArmorStand as : grapplingPieces) {
+                            as.teleport(as.getLocation().add(player.getLocation().toVector().subtract(startVec)));
                         }
-                    }
-                    // if we hit a block
-                    else if(hitBlock) {
-                        player.setVelocity(player.getVelocity().add(block.getLocation().toVector().subtract(player.getLocation().toVector()).normalize().multiply(0.3)));
-                        for(int i = 0; i < 3; i++) {
-                            if(!grapplingPieces.isEmpty()) {
-                                ArmorStand armorStand = grapplingPieces.pop();
-                                armorStand.remove();
-                            }
-                        }
-                        if(grapplingPieces.isEmpty())
-                            this.cancel();
-                    }
-                    // or else retract the grapple
-                    else {
-                        for(int i = 0; i < 3; i++) {
-                            if(!grapplingPieces.isEmpty()) {
-                                ArmorStand armorStand = grapplingPieces.pop();
-                                armorStand.remove();
+                        startVec = player.getLocation().toVector();
+
+                        // shoot the grapple
+                        if(!maxLengthReached) {
+
+                            maxLengthReached = true;
+
+                            for(int i = 0; i < 40; i++) {
+                                startLoc.add(lookingDir);
+                                if(player.getWorld().getBlockAt(startLoc).getType().isSolid()) {
+                                    hitBlock = true;
+                                    block = player.getWorld().getBlockAt(startLoc);
+                                    break;
+                                }
+                                if(!player.getWorld().getNearbyEntities(startLoc, 1, 1, 1, isCurrentPlayer).isEmpty()) {
+                                    Entity hitEntity = player.getWorld().getNearbyEntities(startLoc, 1, 1, 1, isCurrentPlayer).stream().findFirst().get();
+                                    hitEntity.setVelocity(player.getLocation().toVector().subtract(hitEntity.getLocation().toVector()).normalize().multiply(4));
+                                    break;
+                                }
+                                // rendering the grappling pieces
+                                grapplingPieces.push(getGrapplingPiece(startLoc.subtract(0, 2, 0)));
+                                startLoc.add(0, 2, 0);
                             }
                         }
-                        if(grapplingPieces.isEmpty())
-                            this.cancel();
+                        // if we hit a block
+                        else if(hitBlock) {
+                            player.setVelocity(player.getVelocity().add(block.getLocation().toVector().subtract(player.getLocation().toVector()).normalize().multiply(0.3)));
+                            for(int i = 0; i < 3; i++) {
+                                if(!grapplingPieces.isEmpty()) {
+                                    ArmorStand armorStand = grapplingPieces.pop();
+                                    armorStand.remove();
+                                }
+                            }
+                            if(grapplingPieces.isEmpty())
+                                this.cancel();
+                        }
+                        // or else retract the grapple
+                        else {
+                            for(int i = 0; i < 3; i++) {
+                                if(!grapplingPieces.isEmpty()) {
+                                    ArmorStand armorStand = grapplingPieces.pop();
+                                    armorStand.remove();
+                                }
+                            }
+                            if(grapplingPieces.isEmpty())
+                                this.cancel();
 
+                        }
                     }
-                }
-            }.runTaskTimer(PluginMain.getPlugin(PluginMain.class), 0, 1);
-
-            //if(CustomUnstackableItem.isAvailable(Constants.ServerConstants.STAFF_OF_ICE_IDENTIFIER, item, 5000)) {
-                //CustomUnstackableItem.setCooldown(Constants.ServerConstants.STAFF_OF_ICE_IDENTIFIER, item);
-                //event.getPlayer().setCooldown(Material.BONE, 100);
-                //Snowball snow = event.getPlayer().launchProjectile(Snowball.class, event.getPlayer().getEyeLocation().getDirection().multiply(2));
-                //snow.setMetadata(CustomEnchantments.STAFF_OF_ICE, Constants.ServerConstants.FIXED_METADATA_TRUE);
-            //}
-            
+                }.runTaskTimer(PluginMain.getPlugin(PluginMain.class), 0, 1);
+            }
 		}
 	}
 

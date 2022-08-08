@@ -36,7 +36,10 @@ public class ServerEventsListener implements Listener{
         event.getPlayer().getInventory().addItem(new SpikeWave());
         event.getPlayer().getInventory().addItem(new KamiKaze());
 
-
+        for(Material mat : Material.values()) {
+            if(mat == Material.TALL_GRASS)
+                System.out.println(mat.isOccluding());
+        }
         
         event.getPlayer().getInventory().addItem(new GrapplingHook());
         ItemStack helm = new ItemStack(Material.NETHERITE_HELMET);
