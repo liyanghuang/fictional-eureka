@@ -13,5 +13,6 @@ public class CustomEnchantments {
     public static final String SPIKE_WAVE = "Spike Attack";
     public static final String KAMI_KAZE = "Neeoom X";
     public static final String GRAPPLING_HOOK = "Grappling";
+    public static final String BOOM_STICK = "Boom X";
 }
 

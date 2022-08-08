@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.event.Listener;
 
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.AirJordans;
+import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.BoomStick;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.KamiKaze;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.RainBow;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.SpikeWave;
@@ -17,7 +18,6 @@ import com.fe.items.CustomUnstackableItems.MythicUnstackableItems.DeathNote;
 import com.fe.items.CustomUnstackableItems.MythicUnstackableItems.Wabbajack;
 import com.fe.plugin.ServerEventsListener;
 import com.fe.util.Constants;
-import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
 
@@ -39,6 +39,7 @@ public class ListenerProvider implements Provider<List<Listener>>{
         allListeners.add(new SpikeWave());
         allListeners.add(new KamiKaze());
         allListeners.add(new GrapplingHook());
+        allListeners.add(new BoomStick());
         return allListeners;
     }
     

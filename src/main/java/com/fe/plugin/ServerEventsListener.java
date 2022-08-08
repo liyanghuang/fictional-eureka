@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.AirJordans;
+import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.BoomStick;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.KamiKaze;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.RainBow;
 import com.fe.items.CustomUnstackableItems.EpicUnstackableItems.SpikeWave;
@@ -35,6 +36,7 @@ public class ServerEventsListener implements Listener{
         event.getPlayer().getInventory().addItem(new DeathNote());
         event.getPlayer().getInventory().addItem(new SpikeWave());
         event.getPlayer().getInventory().addItem(new KamiKaze());
+        event.getPlayer().getInventory().addItem(new BoomStick());
 
         for(Material mat : Material.values()) {
             if(mat == Material.TALL_GRASS)
