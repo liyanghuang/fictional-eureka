@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import javax.xml.transform.Templates;
+
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -14,6 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -63,74 +66,95 @@ public class SpikeWave extends EpicUnstackableItem implements Listener {
             final Vector eyeDir = event.getPlayer().getEyeLocation().getDirection();
             final World world = event.getPlayer().getWorld();
 
-
             final RayTraceResult rt = world.rayTrace(eyeLoc, eyeDir, 200, FluidCollisionMode.NEVER, true, 1, isCurrentPlayer);
 
             // hits an entity
             if (rt.getHitEntity() != null) {
                 System.out.println("something been hit"); //DELETE
 
-                // get TARGET LOCATION & BLOCK LOCATION
-                Location initialTargLoc = rt.getHitEntity().getLocation();
-                Location casterLoc = event.getPlayer().getLocation();
-                double spikeTravel = 2; // how many blocks it travels each attack
-
                 // schedules the task of running the loop
                 new BukkitRunnable() {
+                    // get TARGET LOCATION & BLOCK LOCATION
+                    final Entity targ = rt.getHitEntity();
+                    Location targLoc;
+                    Location chaseLoc = event.getPlayer().getLocation();
+
+;
                     // These set of codes are initialized only once
-                    long startTime = System.currentTimeMillis(); 
-                    long startInterval = 2000;
-                    long timeLimit = 10000;
-                    Location spikeLoc = casterLoc;
-                    Location targLoc = initialTargLoc;
+                    final long startTime = System.currentTimeMillis(); 
+                    long interval = 3000;
+                    long timeLimit = 20000;
                     float firePower = (float) 1.0;
-                    Entity target = rt.getHitEntity();
+                    ArrayList<Block> spikeList = new ArrayList<Block>();
+                    double distance;
 
                     // looping
                     @Override
                     public void run() {
-                        targLoc = target.getLocation();
-                        double distance = spikeLoc.toVector().distance(targLoc.toVector());
 
                         // ATTACK LOOP
-                        if(System.currentTimeMillis() - startTime> startInterval){
+                        if(System.currentTimeMillis() - startTime> interval){
+
                             // stops decreasing attack interval at 0.2 seconds
-                            if (startInterval > 200){
-                                startInterval = startInterval - 100;
+                            if (interval > 200){
+                                interval = interval - 100;
                             }
-                            // Getting new block
-                            Vector unitVectorToTarg = targLoc.toVector().subtract(spikeLoc.toVector()).normalize();
-                            Location tempLoc = spikeLoc.add(unitVectorToTarg.multiply(spikeTravel));
-                            spikeLoc = world.getHighestBlockAt(tempLoc).getLocation();
-                            Location AirLoc = spikeLoc.add(0, 1, 0);
+
+                            // Get new target location and spike location
+                            targLoc = targ.getLocation();
+                            chaseLoc = getNextBlockLoc(chaseLoc, targLoc);
+                            distance = targLoc.distance(chaseLoc);
 
                             // Dripstone spawn and despawn
-                            Block placeSpike = world.getBlockAt(AirLoc);
-                            placeSpike.setType(Material.POINTED_DRIPSTONE);
-                            placeSpike.getLocation().add(0,1,0).getBlock().setType(Material.POINTED_DRIPSTONE);
-                            placeSpike.getLocation().add(0,2,0).getBlock().setType(Material.POINTED_DRIPSTONE);
+                            chaseLoc.getBlock().setType(Material.POINTED_DRIPSTONE);
+                            chaseLoc.add(0,1,0).getBlock().setType(Material.POINTED_DRIPSTONE);
+                            chaseLoc.add(0,2,0).getBlock().setType(Material.POINTED_DRIPSTONE);
 
                             // Adds location of spike to list to delete later
+                            spikeList.add(chaseLoc.getBlock());
 
                             // Explosion at block, no fire nor grief
-                            world.createExplosion(spikeLoc, firePower, false, false);
-                            firePower = (float) (firePower * 1.1);
+                            world.createExplosion(chaseLoc, firePower, false, false);
+                            if (firePower < 10){
+                                firePower = (float) (firePower * 1.1);
+                            }
 
                         }
 
                         // Cancel attack if takes took long
                         if(System.currentTimeMillis() - startTime > timeLimit || distance < 3){
                             // despawn dripstone
+                            for (int i = 0; i > spikeList.size() ; ++i){
+                                spikeList.get(i).setType(Material.AIR);
+                            }
+
                             System.out.println("attack done");
                             this.cancel();
                             return;
                         }
                     }
 
-               }.runTaskTimer(PluginMain.getPlugin(PluginMain.class), 0, 4);
-
-               
+                    // Method for finding the next location of attack
+                    private Location getNextBlockLoc(Location chaseLoc2, Location targLoc2) {
+                        Vector fire = targLoc2.toVector().subtract(chaseLoc2.toVector()).normalize();
+                        Block tempBlock = chaseLoc2.add(fire.multiply(2)).add(0, -2, 0).getBlock();
+                        // if air, keep going down until hits a block. Else go up. Target block is the air above surface
+                        if (tempBlock.getType() == Material.AIR){
+                            do {
+                                tempBlock = tempBlock.getLocation().add(0,-1,0).getBlock();
+                            } while (tempBlock.getType() == Material.AIR);
+                            tempBlock = tempBlock.getLocation().add(0,1,0).getBlock();
+                        }
+                        else {
+                            do {
+                                tempBlock = tempBlock.getLocation().add(0,1,0).getBlock();
+                            } while (tempBlock.getType() != Material.AIR);
+                        }
+                        return tempBlock.getLocation();
+                    }
+               }.runTaskTimer(PluginMain.getPlugin(PluginMain.class), 0, 4);               
             }
+
             // hits a block
             if (rt.getHitBlock() != null){
                 return;
@@ -156,6 +180,5 @@ public class SpikeWave extends EpicUnstackableItem implements Listener {
                         // if time is under [time limit]
                             // do not decrease interval of attack
         }
-
     }
 }
