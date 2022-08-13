@@ -3,6 +3,8 @@ package com.fe.items.CustomUnstackableItems.EpicUnstackableItems;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import javax.swing.text.StyledEditorKit;
+
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
@@ -52,35 +54,42 @@ public class KamiKaze extends EpicUnstackableItem implements Listener{
             "Allahu Akbar");
     }
 
-    Player p;
-    boolean bombed = false;
-    ItemStack item;
-
     @EventHandler
 	public void onCrashLanding(final EntityDamageEvent event) {
         Entity e = event.getEntity(); 
 
         // check if entity hurt is a player
         if(e instanceof Player) {
-            p = (Player) e;
+            Player p = (Player) e;
             
             if (CustomEnchantManager.hasEnchantText(p.getInventory().getChestplate(), CustomEnchantments.KAMI_KAZE)){
                 final ItemStack kamikaze = p.getInventory().getChestplate();
                 final ItemMeta meta = kamikaze.getItemMeta();
                 boolean isGliding = false;
-                // check if player got hurt from flying into a wall
-                if(meta.getPersistentDataContainer().has(Constants.ServerConstants.IS_GLIDING_IDENTIFIER, PersistentDataType.INTEGER))
-                    isGliding = meta.getPersistentDataContainer().get(Constants.ServerConstants.IS_GLIDING_IDENTIFIER, PersistentDataType.INTEGER) == Constants.ServerConstants.PERSISTENT_DATA_TYPE_TRUE;
+
+                if(meta.getPersistentDataContainer().has(Constants.ServerConstants.KAMI_KAZE_GLIDING, PersistentDataType.INTEGER))
+                    isGliding = meta.getPersistentDataContainer().get(Constants.ServerConstants.KAMI_KAZE_GLIDING, PersistentDataType.INTEGER) == Constants.ServerConstants.PERSISTENT_DATA_TYPE_TRUE;
+                    
+                // check if player got hurt from flying into a wall                   
                 if ( (event.getCause() == DamageCause.FLY_INTO_WALL && isGliding)|| 
                     (event.getCause() == DamageCause.FALL && isGliding)) {
                     // use CustomUnstackableItem cooldown system to declare a 20 second cooldown, have to use static methods b/c spigot doesn't cast well
-                    item = p.getInventory().getChestplate();
+                    final ItemStack item = p.getInventory().getChestplate();
+                    
+                    // if player is gliding and gets hurt from wall or ground, set bombing to true
 
+                        
                     if(CustomUnstackableItem.isAvailable(Constants.ServerConstants.KAMI_KAZE_IDENTIFIER, item, 1000)) {
                         CustomUnstackableItem.setCooldown(Constants.ServerConstants.KAMI_KAZE_IDENTIFIER, item);
-                        bombed = true;
+
+                        // Set has bombed meta data to true
+                        meta.getPersistentDataContainer().set(Constants.ServerConstants.KAMI_KAZE_BOMBED, PersistentDataType.INTEGER, Constants.ServerConstants.PERSISTENT_DATA_TYPE_TRUE);
+                        kamikaze.setItemMeta(meta);
+
                         p.setHealth(0);
                         p.getWorld().createExplosion(p.getLocation(), 10, true, false);
+
+                    
                     }    
                 }
             }
@@ -96,7 +105,11 @@ public class KamiKaze extends EpicUnstackableItem implements Listener{
                 if(!p.isGliding()) {
                     final ItemStack kamikaze = p.getInventory().getChestplate();
                     final ItemMeta meta = kamikaze.getItemMeta();
-                    meta.getPersistentDataContainer().set(Constants.ServerConstants.IS_GLIDING_IDENTIFIER, PersistentDataType.INTEGER, Constants.ServerConstants.PERSISTENT_DATA_TYPE_TRUE);
+
+                    final ItemStack firework = new ItemStack(Material.FIREWORK_ROCKET, 3);
+                    p.getInventory().addItem(firework);
+
+                    meta.getPersistentDataContainer().set(Constants.ServerConstants.KAMI_KAZE_GLIDING, PersistentDataType.INTEGER, Constants.ServerConstants.PERSISTENT_DATA_TYPE_TRUE);
                     kamikaze.setItemMeta(meta);
                 }
                 if(p.isGliding()) {
@@ -106,10 +119,9 @@ public class KamiKaze extends EpicUnstackableItem implements Listener{
 
                         @Override
                         public void run() {
-                            meta.getPersistentDataContainer().set(Constants.ServerConstants.IS_GLIDING_IDENTIFIER, PersistentDataType.INTEGER, Constants.ServerConstants.PERSISTENT_DATA_TYPE_FALSE);
+                            meta.getPersistentDataContainer().set(Constants.ServerConstants.KAMI_KAZE_GLIDING, PersistentDataType.INTEGER, Constants.ServerConstants.PERSISTENT_DATA_TYPE_FALSE);
                             kamikaze.setItemMeta(meta);
                         }
-                        
                     }.runTaskLater(PluginMain.getPlugin(PluginMain.class), 4);
                 }
             }
@@ -118,18 +130,32 @@ public class KamiKaze extends EpicUnstackableItem implements Listener{
 
     @EventHandler
     public void PlayerDeathEvent (final PlayerDeathEvent event) {
-        if (CustomEnchantManager.hasEnchantText(p.getInventory().getChestplate(), CustomEnchantments.KAMI_KAZE) && bombed ) {
-            event.setKeepInventory(true);
-            event.setKeepLevel(true);
-            event.getDrops().clear();
-            event.setDroppedExp(0);
-        }
-    }
+        Player p = event.getEntity();
+        
+        if (CustomEnchantManager.hasEnchantText(p.getInventory().getChestplate(), CustomEnchantments.KAMI_KAZE)) {
+            final ItemStack kamikaze = p.getInventory().getChestplate();
+            final ItemMeta meta = kamikaze.getItemMeta();
+            boolean hasBombed = false;
 
-    @EventHandler
-    public void PlayerRespawnEvent (final PlayerRespawnEvent event) {
-        if (CustomEnchantManager.hasEnchantText(p.getInventory().getChestplate(), CustomEnchantments.KAMI_KAZE) && bombed ) {
-                bombed = false;
+
+            if(meta.getPersistentDataContainer().has(Constants.ServerConstants.KAMI_KAZE_BOMBED, PersistentDataType.INTEGER)){
+                hasBombed = meta.getPersistentDataContainer().get(Constants.ServerConstants.KAMI_KAZE_BOMBED, PersistentDataType.INTEGER) == Constants.ServerConstants.PERSISTENT_DATA_TYPE_TRUE;
+
+            }
+            if (hasBombed){
+                event.setKeepInventory(true);
+                event.setKeepLevel(true);
+                event.getDrops().clear();
+                event.setDroppedExp(0);
+
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        meta.getPersistentDataContainer().set(Constants.ServerConstants.KAMI_KAZE_BOMBED, PersistentDataType.INTEGER, Constants.ServerConstants.PERSISTENT_DATA_TYPE_FALSE);
+                        kamikaze.setItemMeta(meta);
+                    }
+                }.runTaskLater(PluginMain.getPlugin(PluginMain.class), 4);
+            }
         }
     }
 }
